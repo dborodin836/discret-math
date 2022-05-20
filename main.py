@@ -52,9 +52,9 @@ def replace_all(row: str) -> str:
         left = row[:index]
         if '̅' in left:
             left = f'not[{left[:-1]}]'
-        right = row[index + 1]
+        right = row[index + 1:]
         if '̅' in right:
-            right = f'not[{right[1:]}]'
+            right = f'not[{right[0:-1]}]'
         return f"xor[{left}, {right}]"
     if '|' in row:
         index = row.index('|')
@@ -63,7 +63,7 @@ def replace_all(row: str) -> str:
             left = f'not[{left[:-1]}]'
         right = row[index + 1:]
         if '̅' in right:
-            right = f'not[{right[1:]}]'
+            right = f'not[{right[0:-1]}]'
         return f"not[and[{left}, {right}]]"
     if '~' in row:
         index = row.index('~')
@@ -72,7 +72,7 @@ def replace_all(row: str) -> str:
             left = f'not[{left[:-1]}]'
         right = row[index + 1:]
         if '̅' in right:
-            right = f'not[{right[1:]}]'
+            right = f'not[{right[0:-1]}]'
         return f"not[xor[{left}, {right}]]"
     if '↓' in row:
         index = row.index('↓')
@@ -81,7 +81,7 @@ def replace_all(row: str) -> str:
             left = f'not[{left[:-1]}]'
         right = row[index + 1:]
         if '̅' in right:
-            right = f'not[{right[1:]}]'
+            right = f'not[{right[0:-1]}]'
         return f"not[or[{left}, {right}]]"
     if '→' in row:
         index = row.index('→')
@@ -90,7 +90,7 @@ def replace_all(row: str) -> str:
             left = f'not[{left[:-1]}]'
         right = row[index + 1:]
         if '̅' in right:
-            right = f'not[{right[1:]}]'
+            right = f'not[{right[0:-1]}]'
         return f"or[not[{left}], {right}]"
     if '∨' in row:
         index = row.index('∨')
@@ -99,7 +99,7 @@ def replace_all(row: str) -> str:
             left = f'not[{left[:-1]}]'
         right = row[index + 1:]
         if '̅' in right:
-            right = f'not[{right[1:]}]'
+            right = f'not[{right[0:-1]}]'
         return f"or[{left}, {right}]"
     if '∧' in row:
         index = row.index('∧')
@@ -108,7 +108,7 @@ def replace_all(row: str) -> str:
             left = f'not[{left[:-1]}]'
         right = row[index + 1:]
         if '̅' in right:
-            right = f'not[{right[1:]}]'
+            right = f'not[{right[0:-1]}]'
         return f"and[{left}, {right}]"
     return 'not[' + row[:-1] + ']'
 
