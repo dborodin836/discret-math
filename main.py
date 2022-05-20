@@ -4,6 +4,31 @@ from PySide6.QtWidgets import QApplication, QMainWindow
 
 from design import Ui_MainWindow
 
+COMBINATION = {
+    1: [(0, 1)],
+    2: [(0, 0, 1, 1),
+        (0, 1, 0, 1)],
+    3: [(0, 0, 0, 1, 1, 1, 0, 1),
+        (0, 1, 0, 0, 1, 0, 1, 1),
+        (0, 0, 1, 0, 0, 1, 1, 1)]
+}
+
+
+def xor_logic(a, b) -> bool:
+    return bool(a) != bool(b)
+
+
+def and_logic(a, b) -> bool:
+    return a and b
+
+
+def or_logic(a, b) -> bool:
+    return a or b
+
+
+def not_logic(a) -> bool:
+    return not a
+
 
 def translate_to_python(row: str) -> str:
     if '(' not in row:
@@ -87,6 +112,12 @@ def replace_all(row: str) -> str:
     return 'not[' + row[:-1] + ']'
 
 
+def get_vars(row: str):
+    row = row.replace('xor', '').replace('and', '').replace('or', '').replace('not', '').replace('(', '')\
+             .replace(')', '').replace(',', '').replace(' ', '')
+    return list(set(row))
+
+
 class Calculator(QMainWindow):
     def __init__(self):
         super(Calculator, self).__init__()
@@ -149,8 +180,16 @@ class Calculator(QMainWindow):
     def calculate(self) -> None:
         value = self.ui.lineEdit.text()
         value = '(' + value + ')'
-        result = translate_to_python(value)
+        result = translate_to_python(value).replace('[', '(').replace(']', ')')
+        vars = get_vars(result)
+        result = result.replace('xor', 'temp').replace('and', 'and_logic').replace('or', 'or_logic')\
+                       .replace('not', 'not_logic').replace('temp', 'xor_logic')
         print(result)
+        if len(vars) > 3:
+            raise BaseException
+        start_table_rows = list(zip(vars, COMBINATION[len(vars)]))
+        print(start_table_rows)
+
 
     def clear_all(self) -> None:
         self.entry.setText('')
