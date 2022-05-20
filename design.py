@@ -17,7 +17,7 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QGridLayout, QHBoxLayout, QLineEdit,
     QMainWindow, QPushButton, QSizePolicy, QSpacerItem,
-    QVBoxLayout, QWidget)
+    QTextEdit, QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -53,15 +53,8 @@ class Ui_MainWindow(object):
 
         self.verticalLayout.addWidget(self.lineEdit)
 
-        self.lineEdit_2 = QLineEdit(self.centralwidget)
+        self.lineEdit_2 = QTextEdit(self.centralwidget)
         self.lineEdit_2.setObjectName(u"lineEdit_2")
-        sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.lineEdit_2.sizePolicy().hasHeightForWidth())
-        self.lineEdit_2.setSizePolicy(sizePolicy)
-        self.lineEdit_2.setMouseTracking(False)
-        self.lineEdit_2.setReadOnly(True)
 
         self.verticalLayout.addWidget(self.lineEdit_2)
 
@@ -72,67 +65,67 @@ class Ui_MainWindow(object):
         self.gridLayout.setObjectName(u"gridLayout")
         self.btn_calc = QPushButton(self.centralwidget)
         self.btn_calc.setObjectName(u"btn_calc")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Expanding)
-        sizePolicy1.setHorizontalStretch(0)
-        sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.btn_calc.sizePolicy().hasHeightForWidth())
-        self.btn_calc.setSizePolicy(sizePolicy1)
+        sizePolicy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.btn_calc.sizePolicy().hasHeightForWidth())
+        self.btn_calc.setSizePolicy(sizePolicy)
 
         self.gridLayout.addWidget(self.btn_calc, 0, 3, 1, 1)
 
         self.btn_brace_right = QPushButton(self.centralwidget)
         self.btn_brace_right.setObjectName(u"btn_brace_right")
-        sizePolicy1.setHeightForWidth(self.btn_brace_right.sizePolicy().hasHeightForWidth())
-        self.btn_brace_right.setSizePolicy(sizePolicy1)
+        sizePolicy.setHeightForWidth(self.btn_brace_right.sizePolicy().hasHeightForWidth())
+        self.btn_brace_right.setSizePolicy(sizePolicy)
 
         self.gridLayout.addWidget(self.btn_brace_right, 2, 1, 1, 1)
 
         self.btn_y = QPushButton(self.centralwidget)
         self.btn_y.setObjectName(u"btn_y")
-        sizePolicy1.setHeightForWidth(self.btn_y.sizePolicy().hasHeightForWidth())
-        self.btn_y.setSizePolicy(sizePolicy1)
+        sizePolicy.setHeightForWidth(self.btn_y.sizePolicy().hasHeightForWidth())
+        self.btn_y.setSizePolicy(sizePolicy)
 
         self.gridLayout.addWidget(self.btn_y, 6, 1, 1, 1)
 
         self.btn_xor = QPushButton(self.centralwidget)
         self.btn_xor.setObjectName(u"btn_xor")
-        sizePolicy1.setHeightForWidth(self.btn_xor.sizePolicy().hasHeightForWidth())
-        self.btn_xor.setSizePolicy(sizePolicy1)
+        sizePolicy.setHeightForWidth(self.btn_xor.sizePolicy().hasHeightForWidth())
+        self.btn_xor.setSizePolicy(sizePolicy)
 
         self.gridLayout.addWidget(self.btn_xor, 5, 0, 1, 1)
 
         self.btn_clear = QPushButton(self.centralwidget)
         self.btn_clear.setObjectName(u"btn_clear")
-        sizePolicy1.setHeightForWidth(self.btn_clear.sizePolicy().hasHeightForWidth())
-        self.btn_clear.setSizePolicy(sizePolicy1)
+        sizePolicy.setHeightForWidth(self.btn_clear.sizePolicy().hasHeightForWidth())
+        self.btn_clear.setSizePolicy(sizePolicy)
 
         self.gridLayout.addWidget(self.btn_clear, 0, 0, 1, 1)
 
         self.btn_arr_down = QPushButton(self.centralwidget)
         self.btn_arr_down.setObjectName(u"btn_arr_down")
-        sizePolicy1.setHeightForWidth(self.btn_arr_down.sizePolicy().hasHeightForWidth())
-        self.btn_arr_down.setSizePolicy(sizePolicy1)
+        sizePolicy.setHeightForWidth(self.btn_arr_down.sizePolicy().hasHeightForWidth())
+        self.btn_arr_down.setSizePolicy(sizePolicy)
 
         self.gridLayout.addWidget(self.btn_arr_down, 2, 3, 1, 1)
 
         self.btn_eq = QPushButton(self.centralwidget)
         self.btn_eq.setObjectName(u"btn_eq")
-        sizePolicy1.setHeightForWidth(self.btn_eq.sizePolicy().hasHeightForWidth())
-        self.btn_eq.setSizePolicy(sizePolicy1)
+        sizePolicy.setHeightForWidth(self.btn_eq.sizePolicy().hasHeightForWidth())
+        self.btn_eq.setSizePolicy(sizePolicy)
 
         self.gridLayout.addWidget(self.btn_eq, 3, 0, 1, 1)
 
         self.btn_b = QPushButton(self.centralwidget)
         self.btn_b.setObjectName(u"btn_b")
-        sizePolicy1.setHeightForWidth(self.btn_b.sizePolicy().hasHeightForWidth())
-        self.btn_b.setSizePolicy(sizePolicy1)
+        sizePolicy.setHeightForWidth(self.btn_b.sizePolicy().hasHeightForWidth())
+        self.btn_b.setSizePolicy(sizePolicy)
 
         self.gridLayout.addWidget(self.btn_b, 3, 5, 1, 1)
 
         self.btn_d = QPushButton(self.centralwidget)
         self.btn_d.setObjectName(u"btn_d")
-        sizePolicy1.setHeightForWidth(self.btn_d.sizePolicy().hasHeightForWidth())
-        self.btn_d.setSizePolicy(sizePolicy1)
+        sizePolicy.setHeightForWidth(self.btn_d.sizePolicy().hasHeightForWidth())
+        self.btn_d.setSizePolicy(sizePolicy)
 
         self.gridLayout.addWidget(self.btn_d, 6, 5, 1, 1)
 
@@ -142,78 +135,78 @@ class Ui_MainWindow(object):
 
         self.btn_or_2 = QPushButton(self.centralwidget)
         self.btn_or_2.setObjectName(u"btn_or_2")
-        sizePolicy1.setHeightForWidth(self.btn_or_2.sizePolicy().hasHeightForWidth())
-        self.btn_or_2.setSizePolicy(sizePolicy1)
+        sizePolicy.setHeightForWidth(self.btn_or_2.sizePolicy().hasHeightForWidth())
+        self.btn_or_2.setSizePolicy(sizePolicy)
 
         self.gridLayout.addWidget(self.btn_or_2, 5, 1, 1, 1)
 
         self.btn_sheff = QPushButton(self.centralwidget)
         self.btn_sheff.setObjectName(u"btn_sheff")
-        sizePolicy1.setHeightForWidth(self.btn_sheff.sizePolicy().hasHeightForWidth())
-        self.btn_sheff.setSizePolicy(sizePolicy1)
+        sizePolicy.setHeightForWidth(self.btn_sheff.sizePolicy().hasHeightForWidth())
+        self.btn_sheff.setSizePolicy(sizePolicy)
 
         self.gridLayout.addWidget(self.btn_sheff, 3, 1, 1, 1)
 
         self.btn_arr_right = QPushButton(self.centralwidget)
         self.btn_arr_right.setObjectName(u"btn_arr_right")
-        sizePolicy1.setHeightForWidth(self.btn_arr_right.sizePolicy().hasHeightForWidth())
-        self.btn_arr_right.setSizePolicy(sizePolicy1)
+        sizePolicy.setHeightForWidth(self.btn_arr_right.sizePolicy().hasHeightForWidth())
+        self.btn_arr_right.setSizePolicy(sizePolicy)
 
         self.gridLayout.addWidget(self.btn_arr_right, 3, 3, 1, 1)
 
         self.btn_or = QPushButton(self.centralwidget)
         self.btn_or.setObjectName(u"btn_or")
-        sizePolicy1.setHeightForWidth(self.btn_or.sizePolicy().hasHeightForWidth())
-        self.btn_or.setSizePolicy(sizePolicy1)
+        sizePolicy.setHeightForWidth(self.btn_or.sizePolicy().hasHeightForWidth())
+        self.btn_or.setSizePolicy(sizePolicy)
 
         self.gridLayout.addWidget(self.btn_or, 5, 3, 1, 1)
 
         self.btn_ce = QPushButton(self.centralwidget)
         self.btn_ce.setObjectName(u"btn_ce")
-        sizePolicy1.setHeightForWidth(self.btn_ce.sizePolicy().hasHeightForWidth())
-        self.btn_ce.setSizePolicy(sizePolicy1)
+        sizePolicy.setHeightForWidth(self.btn_ce.sizePolicy().hasHeightForWidth())
+        self.btn_ce.setSizePolicy(sizePolicy)
 
         self.gridLayout.addWidget(self.btn_ce, 0, 1, 1, 1)
 
         self.btn_z = QPushButton(self.centralwidget)
         self.btn_z.setObjectName(u"btn_z")
-        sizePolicy1.setHeightForWidth(self.btn_z.sizePolicy().hasHeightForWidth())
-        self.btn_z.setSizePolicy(sizePolicy1)
+        sizePolicy.setHeightForWidth(self.btn_z.sizePolicy().hasHeightForWidth())
+        self.btn_z.setSizePolicy(sizePolicy)
 
         self.gridLayout.addWidget(self.btn_z, 6, 3, 1, 1)
 
         self.btn_x = QPushButton(self.centralwidget)
         self.btn_x.setObjectName(u"btn_x")
-        sizePolicy1.setHeightForWidth(self.btn_x.sizePolicy().hasHeightForWidth())
-        self.btn_x.setSizePolicy(sizePolicy1)
+        sizePolicy.setHeightForWidth(self.btn_x.sizePolicy().hasHeightForWidth())
+        self.btn_x.setSizePolicy(sizePolicy)
 
         self.gridLayout.addWidget(self.btn_x, 6, 0, 1, 1)
 
         self.btn_not = QPushButton(self.centralwidget)
         self.btn_not.setObjectName(u"btn_not")
-        sizePolicy1.setHeightForWidth(self.btn_not.sizePolicy().hasHeightForWidth())
-        self.btn_not.setSizePolicy(sizePolicy1)
+        sizePolicy.setHeightForWidth(self.btn_not.sizePolicy().hasHeightForWidth())
+        self.btn_not.setSizePolicy(sizePolicy)
 
         self.gridLayout.addWidget(self.btn_not, 0, 5, 1, 1)
 
         self.btn_a = QPushButton(self.centralwidget)
         self.btn_a.setObjectName(u"btn_a")
-        sizePolicy1.setHeightForWidth(self.btn_a.sizePolicy().hasHeightForWidth())
-        self.btn_a.setSizePolicy(sizePolicy1)
+        sizePolicy.setHeightForWidth(self.btn_a.sizePolicy().hasHeightForWidth())
+        self.btn_a.setSizePolicy(sizePolicy)
 
         self.gridLayout.addWidget(self.btn_a, 2, 5, 1, 1)
 
         self.btn_c = QPushButton(self.centralwidget)
         self.btn_c.setObjectName(u"btn_c")
-        sizePolicy1.setHeightForWidth(self.btn_c.sizePolicy().hasHeightForWidth())
-        self.btn_c.setSizePolicy(sizePolicy1)
+        sizePolicy.setHeightForWidth(self.btn_c.sizePolicy().hasHeightForWidth())
+        self.btn_c.setSizePolicy(sizePolicy)
 
         self.gridLayout.addWidget(self.btn_c, 5, 5, 1, 1)
 
         self.btn_brace_left = QPushButton(self.centralwidget)
         self.btn_brace_left.setObjectName(u"btn_brace_left")
-        sizePolicy1.setHeightForWidth(self.btn_brace_left.sizePolicy().hasHeightForWidth())
-        self.btn_brace_left.setSizePolicy(sizePolicy1)
+        sizePolicy.setHeightForWidth(self.btn_brace_left.sizePolicy().hasHeightForWidth())
+        self.btn_brace_left.setSizePolicy(sizePolicy)
 
         self.gridLayout.addWidget(self.btn_brace_left, 2, 0, 1, 1)
 

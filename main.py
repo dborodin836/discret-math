@@ -1,6 +1,7 @@
 import sys
 
 from PySide6.QtWidgets import QApplication, QMainWindow
+from prettytable import PrettyTable
 
 from design import Ui_MainWindow
 
@@ -184,12 +185,17 @@ class Calculator(QMainWindow):
         vars = get_vars(result)
         result = result.replace('xor', 'temp').replace('and', 'and_logic').replace('or', 'or_logic')\
                        .replace('not', 'not_logic').replace('temp', 'xor_logic')
-        print(result)
-        if len(vars) > 3:
-            raise BaseException
-        start_table_rows = list(zip(vars, COMBINATION[len(vars)]))
-        print(start_table_rows)
+        print(vars)
 
+        table = PrettyTable()
+        table.field_names = vars + ['F']
+
+        for value in zip(*COMBINATION[len(vars)]):
+            ans = eval(result.replace('X', str(value[0])).replace('Y', str(value[1])).replace('Z', str(value[2])))
+            value = list(value)
+            table.add_row(value + [int(ans)])
+        self.ui.lineEdit_2.setText(str(table))
+        print(table)
 
     def clear_all(self) -> None:
         self.entry.setText('')
