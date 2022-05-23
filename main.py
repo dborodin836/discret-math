@@ -1,4 +1,5 @@
 import sys
+from typing import List, Tuple
 
 from PySide6.QtWidgets import QApplication, QMainWindow
 from prettytable import PrettyTable
@@ -14,6 +15,17 @@ COMBINATION = {
         (0, 1, 0, 0, 1, 0, 1, 1),
         (0, 0, 1, 0, 0, 1, 1, 1)]
 }
+
+
+def get_combinations(no: int):
+    result = [(0, 1)]
+    while len(result) != no:
+        for element, index in zip(result, range(len(result))):
+            result[index] = element + element[::-1]
+        length = len(result[0]) // 2
+        tuple_ = (0, ) * length + (1, ) * length
+        result.append(tuple_)
+    return result
 
 
 def xor_logic(a, b) -> bool:
@@ -48,6 +60,9 @@ def translate_to_python(row: str) -> str:
 
 
 def replace_all(row: str) -> str:
+    """
+    Replaces all math symbols to functions_names.
+    """
     if '⊕' in row:
         index = row.index('⊕')
         left = row[:index]
@@ -115,8 +130,11 @@ def replace_all(row: str) -> str:
 
 
 def get_vars(row: str):
-    row = row.replace('xor', '').replace('and', '').replace('or', '').replace('not', '').replace('(', '')\
-             .replace(')', '').replace(',', '').replace(' ', '')
+    """
+    Get vars from translated to python string.
+    """
+    row = row.replace('xor', '').replace('and', '').replace('or', '').replace('not', '').replace('(', '') \
+        .replace(')', '').replace(',', '').replace(' ', '')
     return sorted(list(set(row)))
 
 
@@ -172,15 +190,12 @@ class Calculator(QMainWindow):
         """
         btn = self.sender()
 
-        digit_buttons = ('btn_brace_left', 'btn_brace_right', 'btn_arr_down', 'btn_arr_right', 'btn_x',
-                         'btn_y', 'btn_z', 'btn_a', 'btn_b', 'btn_d', 'btn_c', 'btn_eq', 'btn_sheff',
-                         'btn_or_2', 'btn_or', 'btn_xor')
+        allowed_buttons = ('btn_brace_left', 'btn_brace_right', 'btn_arr_down', 'btn_arr_right', 'btn_x',
+                           'btn_y', 'btn_z', 'btn_a', 'btn_b', 'btn_d', 'btn_c', 'btn_eq', 'btn_sheff',
+                           'btn_or_2', 'btn_or', 'btn_xor')
 
-        if btn.objectName() in digit_buttons:
-            if self.ui.lineEdit.text() == '0':
-                self.ui.lineEdit.setText(btn.text())
-            else:
-                self.ui.lineEdit.setText(self.ui.lineEdit.text() + btn.text())
+        if btn.objectName() in allowed_buttons:
+            self.ui.lineEdit.setText(self.ui.lineEdit.text() + btn.text().upper())
 
     def calculate(self) -> None:
         """
@@ -192,15 +207,16 @@ class Calculator(QMainWindow):
 
         variables = get_vars(result)
 
-        result = result.replace('xor', 'temp').replace('and', 'and_logic').replace('or', 'or_logic')\
-                       .replace('not', 'not_logic').replace('temp', 'xor_logic')
+        # Replace canonical discrete math names to in-code ones.
+        result = result.replace('xor', 'temp').replace('and', 'and_logic').replace('or', 'or_logic') \
+            .replace('not', 'not_logic').replace('temp', 'xor_logic')
 
         logger.debug(f"Entered vars: {variables}")
 
         table = PrettyTable()
         table.field_names = variables + ['F']
 
-        for values in zip(*COMBINATION[len(variables)]):
+        for values in zip(*get_combinations(len(variables))):
             tmp_result = result
             for var, val in zip(variables, values):
                 tmp_result = tmp_result.replace(var, str(val))
