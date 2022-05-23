@@ -2,6 +2,7 @@ import sys
 
 from PySide6.QtWidgets import QApplication, QMainWindow
 from prettytable import PrettyTable
+from loguru import logger
 
 from design import Ui_MainWindow
 
@@ -116,7 +117,7 @@ def replace_all(row: str) -> str:
 def get_vars(row: str):
     row = row.replace('xor', '').replace('and', '').replace('or', '').replace('not', '').replace('(', '')\
              .replace(')', '').replace(',', '').replace(' ', '')
-    return list(set(row))
+    return sorted(list(set(row)))
 
 
 class Calculator(QMainWindow):
@@ -166,6 +167,9 @@ class Calculator(QMainWindow):
             self.entry.setText(entry + '̅')
 
     def add_symbol(self):
+        """
+        Handles user input from ui keyboard.
+        """
         btn = self.sender()
 
         digit_buttons = ('btn_brace_left', 'btn_brace_right', 'btn_arr_down', 'btn_arr_right', 'btn_x',
@@ -179,28 +183,46 @@ class Calculator(QMainWindow):
                 self.ui.lineEdit.setText(self.ui.lineEdit.text() + btn.text())
 
     def calculate(self) -> None:
+        """
+        Logic performed, when user hits 'calculate' button.
+        """
         value = self.ui.lineEdit.text()
         value = '(' + value + ')'
         result = translate_to_python(value).replace('[', '(').replace(']', ')')
-        vars = get_vars(result)
+
+        variables = get_vars(result)
+
         result = result.replace('xor', 'temp').replace('and', 'and_logic').replace('or', 'or_logic')\
                        .replace('not', 'not_logic').replace('temp', 'xor_logic')
-        print(vars)
+
+        logger.debug(f"Entered vars: {variables}")
 
         table = PrettyTable()
-        table.field_names = vars + ['F']
+        table.field_names = variables + ['F']
 
-        for value in zip(*COMBINATION[len(vars)]):
-            ans = eval(result.replace('X', str(value[0])).replace('Y', str(value[1])).replace('Z', str(value[2])))
-            value = list(value)
-            table.add_row(value + [int(ans)])
+        for values in zip(*COMBINATION[len(variables)]):
+            tmp_result = result
+            for var, val in zip(variables, values):
+                tmp_result = tmp_result.replace(var, str(val))
+            ans = eval(tmp_result)
+            # Convert to list to add to the table
+            values = list(values)
+            table.add_row(values + [int(ans)])
+
         self.ui.lineEdit_2.setText(str(table))
-        print(table)
+
+        logger.debug('\n' + str(table))
 
     def clear_all(self) -> None:
+        """
+        Clears all user input.
+        """
         self.entry.setText('')
 
     def backspace(self) -> None:
+        """
+        Clears last symbol.
+        """
         entry = self.entry.text()
 
         if len(entry) == 0:
