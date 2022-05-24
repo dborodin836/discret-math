@@ -7,15 +7,6 @@ from loguru import logger
 
 from design import Ui_MainWindow
 
-COMBINATION = {
-    1: [(0, 1)],
-    2: [(0, 0, 1, 1),
-        (0, 1, 0, 1)],
-    3: [(0, 0, 0, 1, 1, 1, 0, 1),
-        (0, 1, 0, 0, 1, 0, 1, 1),
-        (0, 0, 1, 0, 0, 1, 1, 1)]
-}
-
 
 def get_combinations(no: int):
     result = [(0, 1)]
@@ -63,69 +54,19 @@ def replace_all(row: str) -> str:
     """
     Replaces all math symbols to functions_names.
     """
-    if '⊕' in row:
-        index = row.index('⊕')
-        left = row[:index]
-        if '̅' in left:
-            left = f'not[{left[:-1]}]'
-        right = row[index + 1:]
-        if '̅' in right:
-            right = f'not[{right[0:-1]}]'
-        return f"xor[{left}, {right}]"
-    if '|' in row:
-        index = row.index('|')
-        left = row[:index]
-        if '̅' in left:
-            left = f'not[{left[:-1]}]'
-        right = row[index + 1:]
-        if '̅' in right:
-            right = f'not[{right[0:-1]}]'
-        return f"not[and[{left}, {right}]]"
-    if '~' in row:
-        index = row.index('~')
-        left = row[:index]
-        if '̅' in left:
-            left = f'not[{left[:-1]}]'
-        right = row[index + 1:]
-        if '̅' in right:
-            right = f'not[{right[0:-1]}]'
-        return f"not[xor[{left}, {right}]]"
-    if '↓' in row:
-        index = row.index('↓')
-        left = row[:index]
-        if '̅' in left:
-            left = f'not[{left[:-1]}]'
-        right = row[index + 1:]
-        if '̅' in right:
-            right = f'not[{right[0:-1]}]'
-        return f"not[or[{left}, {right}]]"
-    if '→' in row:
-        index = row.index('→')
-        left = row[:index]
-        if '̅' in left:
-            left = f'not[{left[:-1]}]'
-        right = row[index + 1:]
-        if '̅' in right:
-            right = f'not[{right[0:-1]}]'
-        return f"or[not[{left}], {right}]"
-    if '∨' in row:
-        index = row.index('∨')
-        left = row[:index]
-        if '̅' in left:
-            left = f'not[{left[:-1]}]'
-        right = row[index + 1:]
-        if '̅' in right:
-            right = f'not[{right[0:-1]}]'
-        return f"or[{left}, {right}]"
-    if '∧' in row:
-        index = row.index('∧')
-        left = row[:index]
-        if '̅' in left:
-            left = f'not[{left[:-1]}]'
-        right = row[index + 1:]
-        if '̅' in right:
-            right = f'not[{right[0:-1]}]'
-        return f"and[{left}, {right}]"
+    symbols = [('⊕', "xor[%s, %s]"), ('|', "not[and[%s, %s]]"), ('~', "not[xor[%s, %s]]"),
+               ('↓', "not[or[%s, %s]]"), ('→', "or[not[%s], %s]"), ('∨', "or[%s, %s]"), ('∧', "and[%s, %s]")]
+    if any([symbol[0] in row for symbol in symbols]):
+        for symbol, pattern in symbols:
+            if symbol in row:
+                index = row.index(symbol)
+                left = row[:index]
+                if '̅' in left:
+                    left = f'not[{left[:-1]}]'
+                right = row[index + 1:]
+                if '̅' in right:
+                    right = f'not[{right[0:-1]}]'
+                return pattern % (left, right)
     return 'not[' + row[:-1] + ']'
 
 
@@ -141,6 +82,9 @@ def get_vars(row: str):
 class Calculator(QMainWindow):
     def __init__(self):
         super(Calculator, self).__init__()
+        self.knf = ''
+        self.cnf = ''
+        self.variables = None
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
@@ -201,33 +145,54 @@ class Calculator(QMainWindow):
         """
         Logic performed, when user hits 'calculate' button.
         """
+        self.cnf = ''
+        self.knf = ''
         value = self.ui.lineEdit.text()
         value = '(' + value + ')'
-        result = translate_to_python(value).replace('[', '(').replace(']', ')')
+        human_result = translate_to_python(value).replace('[', '(').replace(']', ')')
 
-        variables = get_vars(result)
+        self.variables = get_vars(human_result)
 
         # Replace canonical discrete math names to in-code ones.
-        result = result.replace('xor', 'temp').replace('and', 'and_logic').replace('or', 'or_logic') \
-            .replace('not', 'not_logic').replace('temp', 'xor_logic')
+        result = human_result.replace('xor', 'temp').replace('and', 'and_logic').replace('or', 'or_logic') \
+                             .replace('not', 'not_logic').replace('temp', 'xor_logic')
 
-        logger.debug(f"Entered vars: {variables}")
+        logger.debug(f"Entered vars: {self.variables}")
 
         table = PrettyTable()
-        table.field_names = variables + ['F']
+        table.field_names = self.variables + ['F']
 
-        for values in zip(*get_combinations(len(variables))):
+        for values in zip(*get_combinations(len(self.variables))):
             tmp_result = result
-            for var, val in zip(variables, values):
+            for var, val in zip(self.variables, values):
                 tmp_result = tmp_result.replace(var, str(val))
             ans = eval(tmp_result)
             # Convert to list to add to the table
             values = list(values)
             table.add_row(values + [int(ans)])
+            if int(ans) == 1:
+                self.get_cnf(values)
+            else:
+                self.get_knf(values)
 
-        self.ui.lineEdit_2.setText(str(table))
+        output_pattern = f"""Введённое выражение: 
+{human_result}
+        
+Таблица истинности: 
+{table}
+
+СДНФ:
+{self.cnf[:-1]}
+
+СКНФ:
+{self.knf[:-1]}
+"""
+
+        self.ui.lineEdit_2.setText(output_pattern)
 
         logger.debug('\n' + str(table))
+        logger.debug('SCNF: ' + self.cnf + '\n')
+        logger.debug('SKNF: ' + self.knf + '\n')
 
     def clear_all(self) -> None:
         """
@@ -245,6 +210,25 @@ class Calculator(QMainWindow):
             return
 
         self.entry.setText(entry[:-1])
+
+    def get_cnf(self, values):
+        result = ''
+        for var, value in zip(self.variables, values):
+            if value == 0:
+                result += var + '̅'
+            else:
+                result += var
+        self.cnf += result + '∨'
+
+    def get_knf(self, values):
+        result = ''
+        for var, value in zip(self.variables, values):
+            if value == 1:
+                result += var + '̅' + '∨'
+            else:
+                result += var + '∨'
+        result = result[:-1]
+        self.knf += '(' + result + ')' + '∧'
 
 
 if __name__ == "__main__":
