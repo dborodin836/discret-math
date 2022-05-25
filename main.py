@@ -82,6 +82,7 @@ def get_vars(row: str):
 class Calculator(QMainWindow):
     def __init__(self):
         super(Calculator, self).__init__()
+        self.vector_func = ''
         self.knf = ''
         self.cnf = ''
         self.variables = None
@@ -147,6 +148,7 @@ class Calculator(QMainWindow):
         """
         self.cnf = ''
         self.knf = ''
+        self.vector_func = ''
         value = self.ui.lineEdit.text()
         value = '(' + value + ')'
         human_result = translate_to_python(value).replace('[', '(').replace(']', ')')
@@ -162,11 +164,16 @@ class Calculator(QMainWindow):
         table = PrettyTable()
         table.field_names = self.variables + ['F']
 
-        for values in zip(*get_combinations(len(self.variables))):
+        data = sorted([dat for dat in zip(*get_combinations(len(self.variables)))])
+
+        for values in data:
             tmp_result = result
             for var, val in zip(self.variables, values):
                 tmp_result = tmp_result.replace(var, str(val))
-            ans = eval(tmp_result)
+            try:
+                ans = eval(tmp_result)
+            except SyntaxError:
+                ans = eval(tmp_result + ')')
             # Convert to list to add to the table
             values = list(values)
             table.add_row(values + [int(ans)])
@@ -174,9 +181,13 @@ class Calculator(QMainWindow):
                 self.get_cnf(values)
             else:
                 self.get_knf(values)
+            self.vector_func += str(int(ans))
 
         output_pattern = f"""Введённое выражение: 
 {human_result}
+
+Вектор функция: 
+{self.vector_func}
         
 Таблица истинности: 
 {table}
