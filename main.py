@@ -67,7 +67,9 @@ def replace_all(row: str) -> str:
                 if '̅' in right:
                     right = f'not[{right[0:-1]}]'
                 return pattern % (left, right)
-    return 'not[' + row[:-1] + ']'
+    if '̅' in row:
+        return 'not[' + row[:-1] + ']'
+    return row
 
 
 def get_vars(row: str):
@@ -121,7 +123,7 @@ class Calculator(QMainWindow):
     def negate(self):
         entry = self.entry.text()
 
-        allowed = list('XYZabcdxyzABCD')
+        allowed = list('XYZabcdxyzABCD)')
 
         if len(entry) == 0:
             return
@@ -149,41 +151,42 @@ class Calculator(QMainWindow):
         self.cnf = ''
         self.knf = ''
         self.vector_func = ''
-        value = self.ui.lineEdit.text()
-        value = '(' + value + ')'
-        human_result = translate_to_python(value).replace('[', '(').replace(']', ')')
+        try:
+            value = self.ui.lineEdit.text()
+            value = '(' + value + ')'
+            human_result = translate_to_python(value).replace('[', '(').replace(']', ')')
 
-        self.variables = get_vars(human_result)
+            self.variables = get_vars(human_result)
 
-        # Replace canonical discrete math names to in-code ones.
-        result = human_result.replace('xor', 'temp').replace('and', 'and_logic').replace('or', 'or_logic') \
-                             .replace('not', 'not_logic').replace('temp', 'xor_logic')
+            # Replace canonical discrete math names to in-code ones.
+            result = human_result.replace('xor', 'temp').replace('and', 'and_logic').replace('or', 'or_logic') \
+                                 .replace('not', 'not_logic').replace('temp', 'xor_logic')
 
-        logger.debug(f"Entered vars: {self.variables}")
+            logger.debug(f"Entered vars: {self.variables}")
 
-        table = PrettyTable()
-        table.field_names = self.variables + ['F']
+            table = PrettyTable()
+            table.field_names = self.variables + ['F']
 
-        data = sorted([dat for dat in zip(*get_combinations(len(self.variables)))])
+            data = sorted([dat for dat in zip(*get_combinations(len(self.variables)))])
 
-        for values in data:
-            tmp_result = result
-            for var, val in zip(self.variables, values):
-                tmp_result = tmp_result.replace(var, str(val))
-            try:
-                ans = eval(tmp_result)
-            except SyntaxError:
-                ans = eval(tmp_result + ')')
-            # Convert to list to add to the table
-            values = list(values)
-            table.add_row(values + [int(ans)])
-            if int(ans) == 1:
-                self.get_cnf(values)
-            else:
-                self.get_knf(values)
-            self.vector_func += str(int(ans))
+            for values in data:
+                tmp_result = result
+                for var, val in zip(self.variables, values):
+                    tmp_result = tmp_result.replace(var, str(val))
+                try:
+                    ans = eval(tmp_result)
+                except Exception:
+                    ans = eval(tmp_result + ')')
+                # Convert to list to add to the table
+                values = list(values)
+                table.add_row(values + [int(ans)])
+                if int(ans) == 1:
+                    self.get_cnf(values)
+                else:
+                    self.get_knf(values)
+                self.vector_func += str(int(ans))
 
-        output_pattern = f"""Введённое выражение: 
+            output_pattern = f"""Введённое выражение: 
 {human_result}
 
 Вектор функция: 
@@ -199,11 +202,14 @@ class Calculator(QMainWindow):
 {self.knf[:-1]}
 """
 
-        self.ui.lineEdit_2.setText(output_pattern)
+            self.ui.lineEdit_2.setText(output_pattern)
 
-        logger.debug('\n' + str(table))
-        logger.debug('SCNF: ' + self.cnf + '\n')
-        logger.debug('SKNF: ' + self.knf + '\n')
+            logger.debug('\n' + str(table))
+            logger.debug('SCNF: ' + self.cnf + '\n')
+            logger.debug('SKNF: ' + self.knf + '\n')
+        except Exception as e:
+            self.ui.lineEdit_2.setText("Произошла ошибка!")
+            logger.error(f'Unhandled error: {e}')
 
     def clear_all(self) -> None:
         """
