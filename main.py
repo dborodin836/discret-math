@@ -1,8 +1,7 @@
 import sys
-from typing import List, Tuple
 
 from PySide6.QtWidgets import QApplication, QMainWindow
-from prettytable import PrettyTable
+# from prettytable import PrettyTable
 from loguru import logger
 
 from design import Ui_MainWindow
@@ -151,8 +150,11 @@ class Calculator(QMainWindow):
         self.cnf = ''
         self.knf = ''
         self.vector_func = ''
+        value = self.ui.lineEdit.text()
+        if value == '':
+            self.ui.lineEdit_2.setText("Введите выражение.")
+            return
         try:
-            value = self.ui.lineEdit.text()
             value = '(' + value + ')'
             human_result = translate_to_python(value).replace('[', '(').replace(']', ')')
 
@@ -164,11 +166,8 @@ class Calculator(QMainWindow):
 
             logger.debug(f"Entered vars: {self.variables}")
 
-            table = PrettyTable()
-            table.field_names = self.variables + ['F']
-
             data = sorted([dat for dat in zip(*get_combinations(len(self.variables)))])
-
+            vvaallss = []
             for values in data:
                 tmp_result = result
                 for var, val in zip(self.variables, values):
@@ -179,32 +178,41 @@ class Calculator(QMainWindow):
                     ans = eval(tmp_result + ')')
                 # Convert to list to add to the table
                 values = list(values)
-                table.add_row(values + [int(ans)])
+                values = list(map(str, values))
+                values.append(str(int(ans)))
+                vvaallss.append(' '.join(values))
                 if int(ans) == 1:
                     self.get_cnf(values)
                 else:
                     self.get_knf(values)
                 self.vector_func += str(int(ans))
 
+
+            vvaarrss: str = ''
+            for v in self.variables:
+                vvaarrss += v + ' '
+            vvaarrss += 'F'
+            out_vars = '\n'.join(vvaallss)
             output_pattern = f"""Введённое выражение: 
 {human_result}
 
 Вектор функция: 
 {self.vector_func}
-        
+
 Таблица истинности: 
-{table}
+{vvaarrss}
+{out_vars}
 
 СДНФ:
 {self.cnf[:-1]}
 
 СКНФ:
 {self.knf[:-1]}
-"""
+            """
 
             self.ui.lineEdit_2.setText(output_pattern)
 
-            logger.debug('\n' + str(table))
+            # logger.debug('\n' + str(table))
             logger.debug('SCNF: ' + self.cnf + '\n')
             logger.debug('SKNF: ' + self.knf + '\n')
         except Exception as e:
@@ -215,6 +223,7 @@ class Calculator(QMainWindow):
         """
         Clears all user input.
         """
+
         self.entry.setText('')
 
     def backspace(self) -> None:
@@ -229,18 +238,20 @@ class Calculator(QMainWindow):
         self.entry.setText(entry[:-1])
 
     def get_cnf(self, values):
+        values = values[:-1]
         result = ''
         for var, value in zip(self.variables, values):
-            if value == 0:
+            if int(value) == 0:
                 result += var + '̅'
             else:
                 result += var
         self.cnf += result + '∨'
 
     def get_knf(self, values):
+        values = values[:-1]
         result = ''
         for var, value in zip(self.variables, values):
-            if value == 1:
+            if int(value) == 1:
                 result += var + '̅' + '∨'
             else:
                 result += var + '∨'
